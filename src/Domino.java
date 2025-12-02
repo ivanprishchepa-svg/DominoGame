@@ -92,6 +92,7 @@ public class Domino {
             }
         }
 
+
         playersHands.get(index).remove(curentStartDie);
         map.startMap(curentStartDie);
         edgePoint1 = new int[]{2, 2};

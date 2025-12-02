@@ -28,3 +28,4 @@ public class Die {
         return head + tale;
     }
 }
+
