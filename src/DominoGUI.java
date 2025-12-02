@@ -43,7 +43,7 @@ public class DominoGUI extends Application {
     }
 
     private void initializeGame() {
-        game = new Domino(4); // 4 players
+        game = new Domino(4);
         game.generateDieSet();
         game.makeHands();
         game.startMap();
@@ -69,7 +69,7 @@ public class DominoGUI extends Application {
         // Game board
         createBoardPane();
 
-        // Current player hand (only one visible at a time)
+        // Current player hand
         createCurrentPlayerHand();
 
         // Add all components to root in correct order
@@ -370,18 +370,19 @@ public class DominoGUI extends Application {
         selectedDieIndex = -1;
         firstClickCoords = null;
 
+        updateBoard();
+
+        checkGameEnd();
+
         currentPlayer = (currentPlayer + 1) % game.getPlayersAmount();
         statusLabel.setText("Player " + (currentPlayer + 1) + "'s Turn");
 
-        updateBoard();
         updateCurrentPlayerHand();
-
-        checkGameEnd();
     }
 
     private void checkGameEnd() {
         if (game.handIsEmpty()) {
-            showGameOver("Game Over! A player has no more dominoes.");
+            showGameOver("Game Over! Player " + (currentPlayer + 1) + " has no more dominoes.");
         } else if (game.fishHappens()) {
             showGameOver("Game Over! Fish happened - no more valid moves.");
         }
@@ -390,8 +391,14 @@ public class DominoGUI extends Application {
     private void showGameOver(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Game Over");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setHeaderText(message);
+
+        String scoreTable = "Score table:\n";
+        for (int i = 0; i < game.getPlayersAmount(); i++){
+            scoreTable += "Player" + (i + 1) + " - " + game.countPoints(i) + "\n";
+        }
+
+        alert.setContentText(scoreTable);
         alert.showAndWait();
     }
 

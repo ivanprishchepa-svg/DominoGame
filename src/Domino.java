@@ -38,15 +38,6 @@ public class Domino {
         return edgePoint2;
     }
 
-    public void printHand(int player) {
-        ArrayList<Die> hand = playersHands.get(player);
-        for (Die d : hand) {
-            System.out.print(d.getHead());
-            System.out.print('/');
-            System.out.println(d.getTail());
-        }
-    }
-
     public void makeHands(){
         playersHands = new ArrayList<>();
         for (int i = 0; i < playersAmount; i++) {
@@ -80,7 +71,7 @@ public class Domino {
 
     public void startMap(){
         Die curentStartDie = playersHands.getFirst().getFirst();
-        int index = 0, sum = curentStartDie.sum();
+        int index = 0;
 
         for (int i = 0; i < playersHands.size(); i++){
             ArrayList<Die> hand = playersHands.get(index);
@@ -123,12 +114,32 @@ public class Domino {
 
                     map.set(die.getHead(), headX, headY);
                     map.set(die.getTail(), headX + paddingX, headY + paddingY);
-                    if (isAttachedToEdge(headX, headY) == 1){
-                        edgePoint1[0] = headX + paddingX;
-                        edgePoint1[1] = headY + paddingY;
-                    }else{
-                        edgePoint2[0] = headX + paddingX;
-                        edgePoint2[1] = headY + paddingY;
+
+                    int attachingParameter = isAttachedToEdge(headX, headY);
+                    if (attachingParameter > 0)
+                        switch (attachingParameter){
+                            case 1:
+                                edgePoint1[0] = headX + paddingX;
+                                edgePoint1[1] = headY + paddingY;
+                                break;
+                            case 2:
+                                edgePoint2[0] = headX + paddingX;
+                                edgePoint2[1] = headY + paddingY;
+                                break;
+                        }
+
+                    attachingParameter = isAttachedToEdge(headX + paddingX, headY + paddingY);
+                    if (attachingParameter > 0){
+                        switch (attachingParameter){
+                            case 1:
+                                edgePoint1[0] = headX;
+                                edgePoint1[1] = headY;
+                                break;
+                            case 2:
+                                edgePoint2[0] = headX;
+                                edgePoint2[1] = headY;
+                                break;
+                        }
                     }
 
                     int[] padding = map.extendMap();
@@ -141,8 +152,6 @@ public class Domino {
                 }else throw new IllegalArgumentException("Illegal Move");
             else throw new IllegalArgumentException("Illegal Move: diagonal placement");
         else throw new IllegalArgumentException("Illegal Move: not on edge");
-        System.out.print(edgePoint1[0]);
-        System.out.print(edgePoint1[1]);
     }
 
     public int isAttachedToEdge(int x, int y){
@@ -210,6 +219,19 @@ public class Domino {
                     return false;
 
         return true;
+    }
+
+    public int countPoints(int player){
+        int sum = 0;
+        ArrayList<Die> hand = playersHands.get(player);
+        if (!hand.isEmpty())
+            for (Die d : hand){
+                int x = d.getTail() + d.getHead();
+                if (x == 0)
+                    sum += 10;
+                sum += x;
+            }
+        return sum;
     }
 
 }

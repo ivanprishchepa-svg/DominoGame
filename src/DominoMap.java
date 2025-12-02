@@ -5,18 +5,6 @@ public class DominoMap {
 
     private ArrayList<ArrayList<Integer>> map;
 
-    public void printMap(){
-        for (ArrayList<Integer> a : map){
-            for (int b : a){
-                if (b > 0)
-                    System.out.print(' ');
-                System.out.print(b);
-                System.out.print(' ');
-            }
-            System.out.println();
-        }
-    }
-
     public int get(int x, int y){
         ArrayList<Integer> row = map.get(y);
         return row.get(x);
