@@ -69,34 +69,37 @@ public class Domino {
 
     }
 
-    public void startMap(){
-        Die curentStartDie = playersHands.getFirst().getFirst();
+    public int startMap(){
+        Die currentStartDie = playersHands.getFirst().getFirst();
         int index = 0;
+        if (currentStartDie.getHead() == 0 && currentStartDie.getTail() == 0)
+            currentStartDie = playersHands.removeFirst().get(1);
 
         for (int i = 0; i < playersHands.size(); i++){
-            ArrayList<Die> hand = playersHands.get(index);
+            ArrayList<Die> hand = playersHands.get(i);
 
             for (Die currentDie : hand){
                 if (currentDie.getHead() != 0 && currentDie.getTail() !=0) {
 
-                    if (curentStartDie.isDieDouble()) {
-                        if (currentDie.isDieDouble() && currentDie.sum() < curentStartDie.sum()) {
-                            curentStartDie = currentDie;
+                    if (currentStartDie.isDieDouble()) {
+                        if (currentDie.isDieDouble() && currentDie.sum() < currentStartDie.sum()) {
+                            currentStartDie = currentDie;
                             index = i;
+
                         }
-                    } else if (currentDie.isDieDouble() || currentDie.sum() < curentStartDie.sum()) {
-                        curentStartDie = currentDie;
+                    } else if (currentDie.isDieDouble() || currentDie.sum() < currentStartDie.sum()) {
+                        currentStartDie = currentDie;
                         index = i;
                     }
                 }
             }
         }
 
-
-        playersHands.get(index).remove(curentStartDie);
-        map.startMap(curentStartDie);
+        playersHands.get(index).remove(currentStartDie);
+        map.startMap(currentStartDie);
         edgePoint1 = new int[]{2, 2};
         edgePoint2 = new int[]{2, 3};
+        return index;
     }
 
     public void makeMove(int player, int index, int headX, int headY, int paddingX, int paddingY){
@@ -163,6 +166,28 @@ public class Domino {
         return 0;
     }
 
+    public boolean oneAttached(int x, int y){
+        int result = 0;
+        if (map.get(x - 1, y) != -1){
+            result++;
+        }
+        if (map.get(x + 1, y) != -1){
+            result++;
+        }
+        if (map.get(x, y - 1) != -1){
+            result++;
+        }
+        if (map.get(x, y + 1) != -1){
+            result++;
+        }
+        return result == 1;
+    }
+
+    public boolean isEdge(int x, int y){
+        return x == edgePoint1[0] && y == edgePoint1[1] ||
+                x == edgePoint2[0] && y == edgePoint2[1];
+    }
+
     public int isPossibleToPlace(int value, int x, int y){
         int sum = 0;
 
@@ -170,22 +195,22 @@ public class Domino {
             return -1;
 
         if (x - 1 > 0) {
-            if (map.get(x - 1, y) != -1 && map.get(x - 1, y) != value)
+            if (map.get(x - 1, y) != -1 && !(map.get(x - 1, y) == value && isEdge(x - 1, y)))
                 return -1;
             sum += map.get(x - 1, y) + 1;
         }
-        if (y + 1 < map.getWidth() - 1){
-            if (map.get(x, y + 1) != -1 && map.get(x, y + 1) != value)
+        if (y + 1 < map.getWidth()){
+            if (map.get(x, y + 1) != -1 && !(map.get(x, y + 1) == value && isEdge(x, y + 1)))
                 return -1;
             sum += map.get(x, y + 1) + 1;
         }
-        if (x + 1 < map.getLength() - 1) {
-            if (map.get(x + 1, y) != -1 && map.get(x + 1, y) != value)
+        if (x + 1 < map.getLength()) {
+            if (map.get(x + 1, y) != -1 && !(map.get(x + 1, y) == value && isEdge(x + 1, y)))
                 return -1;
             sum += map.get(x + 1, y) + 1;
         }
         if (y - 1 > 0) {
-            if (map.get(x, y - 1) != -1 && map.get(x, y - 1) != value)
+            if (map.get(x, y - 1) != -1 && !(map.get(x, y - 1) == value && isEdge(x, y - 1)))
                 return -1;
             sum += map.get(x, y - 1) + 1;
         }
@@ -222,16 +247,15 @@ public class Domino {
         return true;
     }
 
-    public int countPoints(int player){
+    public int countScore(int player){
         int sum = 0;
         ArrayList<Die> hand = playersHands.get(player);
         if (!hand.isEmpty())
             for (Die d : hand){
-                int x = d.getTail() + d.getHead();
-                if (x == 0)
-                    sum += 10;
-                sum += x;
+                sum += d.getTail() + d.getHead();
             }
+        if (hand.size() == 1 && !fishHappens())
+            return 25;
         return sum;
     }
 

@@ -23,8 +23,6 @@ public class Die {
     }
 
     public int sum(){
-        if (head + tale == 0)
-            return 10;
         return head + tale;
     }
 }

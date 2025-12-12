@@ -41,7 +41,6 @@ public class DominoMap {
         int paddingY = 0;
 
         for (int n = 1; n <= 2; n++) {
-            // верхняя/нижняя граница
             for (int v : map.get(1))
                 if (v != -1) {
                     map.addFirst(getNullRow());
@@ -57,7 +56,6 @@ public class DominoMap {
             boolean checkedL = false;
             boolean checkedR = false;
 
-            // лево/право
             for (int i = 0; i < map.size() - 2; i++) {
                 ArrayList<Integer> row = map.get(i);
                 if (row.get(1) != -1 && !checkedL) {
